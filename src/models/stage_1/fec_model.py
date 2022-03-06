@@ -17,11 +17,6 @@ class FECModel:
         self.checkpoint_prefix = None
         self.checkpoint_manager = None
 
-        self.errors = []
-
-    def is_valid(self):
-        return len(self.errors) == 0
-
     def build_model(self):
         model = tf.keras.Sequential()
 
