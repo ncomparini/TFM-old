@@ -17,6 +17,7 @@ class FECModel:
         self.checkpoint_prefix = None
         self.checkpoint_manager = None
 
+
     def build_model(self):
         model = tf.keras.Sequential()
 
