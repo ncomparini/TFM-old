@@ -1,0 +1,42 @@
+data:
+  menpo:
+    train:
+      sample: "data/processed/menpo-2d-frontals/train/input"
+      target: "data/processed/menpo-2d-frontals/train/output"
+    test:
+      sample: "data/processed/menpo-2d-frontals/test/input"
+      target: "data/processed/menpo-2d-frontals/test/output"
+
+hyperparameters:
+  gan:
+    vanilla:
+      width: 128
+      height: 128
+      sample-image-channels: 3
+      target-image-channels: 1
+      kernel-size: 4
+      mean: 0.0
+      std-dev: 0.02
+      dropout: 0.5
+      lr-generator: 0.00001
+      lr-discriminator: 0.000001
+      beta: 0.5
+      lambda: 100
+      epochs: 100
+      batch-size: 4
+
+    patch-gan:
+      width: 128
+      height: 128
+      sample-image-channels: 3
+      target-image-channels: 1
+      kernel-size: 4
+      mean: 0.0
+      std-dev: 0.02
+      dropout: 0.5
+      lr-generator: 0.00001
+      lr-discriminator: 0.000001
+      beta: 0.5
+      lambda: 100
+      epochs: 1
+      batch-size: 4
