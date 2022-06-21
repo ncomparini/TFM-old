@@ -38,5 +38,5 @@ hyperparameters:
       lr-discriminator: 0.000001
       beta: 0.5
       lambda: 100
-      epochs: 1
+      epochs: 100
       batch-size: 4
