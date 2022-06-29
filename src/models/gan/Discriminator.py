@@ -51,7 +51,7 @@ class Discriminator:
             flatten = Flatten()(last)
             last = Dense(1)(flatten)
 
-        return tf.keras.Model(inputs=[inp, tar], outputs=last)
+        return tf.keras.Model(inputs=[inp, tar], outputs=last, name="Discriminator")
 
     def _downsample(self, filters, size, mean, std_dev, apply_batch_norm=True):
         initializer = tf.random_normal_initializer(mean, std_dev)

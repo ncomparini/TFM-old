@@ -67,7 +67,7 @@ class Generator:
 
         last = last(x)
 
-        return tf.keras.Model(inputs=inputs, outputs=last)
+        return tf.keras.Model(inputs=inputs, outputs=last, name="Generator")
 
     def _upsample(self, filters, size, mean, std_dev, prob_dropout=None):
         initializer = tf.random_normal_initializer(mean, std_dev)
