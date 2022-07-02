@@ -7,7 +7,9 @@ menpo-2d-frontals
 
 secrets.yml
 
-.neptune
+src/.neptune
+src/evaluation/.neptune
+src/training/.neptune
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

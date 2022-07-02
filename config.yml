@@ -1,12 +1,3 @@
-data:
-  menpo:
-    train:
-      sample: "data/processed/menpo-2d-frontals/train/input"
-      target: "data/processed/menpo-2d-frontals/train/output"
-    test:
-      sample: "data/processed/menpo-2d-frontals/test/input"
-      target: "data/processed/menpo-2d-frontals/test/output"
-
 hyperparameters:
   gan:
     vanilla:
@@ -34,8 +25,8 @@ hyperparameters:
       mean: 0.0
       std-dev: 0.02
       dropout: 0.5
-      lr-generator: 0.00001
-      lr-discriminator: 0.000001
+      lr-generator: 0.000005
+      lr-discriminator: 0.0000001
       beta: 0.5
       lambda: 100
       epochs: 100

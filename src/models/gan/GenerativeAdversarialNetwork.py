@@ -114,8 +114,10 @@ class GenerativeAdversarialNetwork:
         self.log_tracker.add_tags(tags)
 
     def save_model(self):
-        print("Saving model...")
-        model_path = os.path.join(MODELS_PATH, f"model_{datetime.today().strftime('%Y-%m-%d_%H.%M.%S')}")
+        run_id = self.log_tracker.get_run_id()
+
+        print(f"Saving model with run id {run_id}.")
+        model_path = os.path.join(MODELS_PATH, f"model_{run_id}_{datetime.today().strftime('%Y-%m-%d_%H.%M.%S')}")
         os.makedirs(model_path)
 
         with open(os.path.join(model_path, "generator_model.json"), "w") as json_file:
@@ -124,8 +126,8 @@ class GenerativeAdversarialNetwork:
         with open(os.path.join(model_path, "discriminator_model.json"), "w") as json_file:
             json_file.write(self.discriminator.model.to_json())
 
-        self.generator.model.save_model(filepath=os.path.join(model_path, "generator_weights.h5"))
-        self.discriminator.model.save_model(filepath=os.path.join(model_path, "discriminator_weights.h5"))
+        self.generator.model.save(filepath=os.path.join(model_path, "generator_model.h5"))
+        self.discriminator.model.save(filepath=os.path.join(model_path, "discriminator_model.h5"))
         self.log_tracker.save_static_variable("model-path", model_path)
         print("Model saved")
 
