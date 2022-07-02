@@ -38,25 +38,24 @@ def compute_nppe_values(model, dataset: ImageDataset, dictionary):
     return nppe_values
 
 
-def get_image_proportion(auc_values, limit_nppe):
-    image_proportion = -1
-    nppe = -1
-    for i, current_nppe in enumerate(auc_values):
-        if current_nppe >= limit_nppe:
-            image_proportion = i / len(auc_values)
-            nppe = current_nppe
-            break
+def get_image_proportion(nppe_values, limit_nppe):
+    values_under_limit = np.argwhere(nppe_values < limit_nppe)
+    len_values_under_limit = len(values_under_limit)
+    len_nppe_values = len(nppe_values)
+
+    image_proportion = len_values_under_limit / len_nppe_values
+    nppe = nppe_values[len_values_under_limit] if len_values_under_limit != len_nppe_values else nppe_values[-1]
 
     return image_proportion, nppe
 
 
-def compute_auc_points(sorted_auc_values, ratio=10):
+def compute_auc_points(sorted_nppe_values, ratio=10):
     auc_points = [(0, 0)]
     step = (0.005 / ratio)
-    max_nppe = sorted_auc_values[-1]
+    max_nppe = sorted_nppe_values[-1]
 
     for nppe in np.arange(0.0, max_nppe, step):
-        image_proportion, current_nppe = get_image_proportion(sorted_auc_values, nppe)
+        image_proportion, current_nppe = get_image_proportion(sorted_nppe_values, nppe)
         auc_points.append((current_nppe, image_proportion))
 
     return np.asarray(auc_points)
