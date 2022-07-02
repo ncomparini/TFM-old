@@ -15,7 +15,7 @@ def load_module(path, module):
     return load_model(os.path.join(path, f"{module}_model.h5"), compile=False)
 
 
-SELECTED_MODEL = "model_TFM-34_2022-06-22_18.40.38"
+SELECTED_MODEL = "model_TFM-35_2022-07-02_15.25.31"
 
 if __name__ == "__main__":
     with open(SECRETS_PATH, 'r') as file:
@@ -49,4 +49,3 @@ if __name__ == "__main__":
     neptune_manager.save_static_variable("evaluation/nppe-mean", nppe_mean)
 
     print(f"Evaluation finished. Elapsed time: {end_time - start_time}")
-    foo = 1
