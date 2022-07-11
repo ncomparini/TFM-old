@@ -1,32 +1,25 @@
 import tensorflow as tf
-from tensorflow.keras.losses import BinaryCrossentropy
-from tensorflow.keras.layers import Conv2D, BatchNormalization, LeakyReLU, concatenate, ZeroPadding2D
+from tensorflow.keras.layers import Conv2D, BatchNormalization, LeakyReLU, Concatenate, ZeroPadding2D
 from tensorflow_core.python.keras.layers import Flatten, Dense
 
+from src.models.gan.discriminator.Discriminator import Discriminator
 
-class Discriminator:
-    def __init__(self, config, patch_gan, loss_identifier=None):
-        self.sample_image_dimensions = config["width"], config["height"], config["sample-image-channels"]
-        self.target_image_dimensions = config["width"], config["height"], config["target-image-channels"]
-        self.kernel_size = config["kernel-size"]
-        self.mean = config["mean"]
-        self.std_dev = config["std-dev"]
-        self.patch_gan = patch_gan
 
-        loss_identifier = BinaryCrossentropy(from_logits=True) if loss_identifier is None else loss_identifier
-        self.loss = tf.keras.losses.get(loss_identifier)
+class PointDiscriminator(Discriminator):
+    def __init__(self, config, loss_identifier=None, patch_gan=None):
+        super().__init__(config, loss_identifier, patch_gan)
+        self.sample_dimensions = config["width"], config["height"], config["sample-image-channels"]
+        self.target_dimensions = (config["number-of-landmarks"], 2)
 
-        self.model = self.__create_architecture()
+        self.model = self.create_architecture()
 
-    def __create_architecture(self):
+    def create_architecture(self):
         initializer = tf.random_normal_initializer(self.mean, self.std_dev)
 
-        inp = tf.keras.layers.Input(shape=self.sample_image_dimensions, name='sample_image')
-        tar = tf.keras.layers.Input(shape=self.target_image_dimensions, name='target_image')
+        inp = tf.keras.layers.Input(shape=self.sample_dimensions, name='sample_image')
+        tar = tf.keras.layers.Input(shape=self.target_dimensions, name='target_points')
 
-        con = concatenate([inp, tar])  # (bs, 256, 256, gen_channels + tar_channels)
-
-        down1 = self._downsample(64, 4, self.mean, self.std_dev, apply_batch_norm=False)(con)  # (bs, 128, 128, 64)
+        down1 = self._downsample(64, 4, self.mean, self.std_dev, apply_batch_norm=False)(inp)  # (bs, 128, 128, 64)
         down2 = self._downsample(128, 4, self.mean, self.std_dev)(down1)  # (bs, 64, 64, 128)
         down3 = self._downsample(256, 4, self.mean, self.std_dev)(down2)  # (bs, 32, 32, 256)
 
@@ -47,9 +40,12 @@ class Discriminator:
                       kernel_initializer=initializer,
                       activation=tf.keras.activations.linear)(zero_pad2)  # (bs, 30, 30, 1)
 
-        if not self.patch_gan:
-            flatten = Flatten()(last)
-            last = Dense(1)(flatten)
+        flatten_last = Flatten()(last)
+        flatten_points = tf.cast(Flatten()(tar), dtype=tf.float32)
+
+        concatenated = Concatenate()([flatten_last, flatten_points])
+
+        last = Dense(1)(concatenated)
 
         return tf.keras.Model(inputs=[inp, tar], outputs=last, name="Discriminator")
 

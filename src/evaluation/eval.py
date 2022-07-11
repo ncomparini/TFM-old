@@ -15,7 +15,7 @@ def load_module(path, module):
     return load_model(os.path.join(path, f"{module}_model.h5"), compile=False)
 
 
-SELECTED_MODEL = "model_TFM-35_2022-07-02_15.25.31"
+SELECTED_MODEL = "model_TFM-40_2022-07-06_16.22.15"
 
 if __name__ == "__main__":
     with open(SECRETS_PATH, 'r') as file:
@@ -25,9 +25,9 @@ if __name__ == "__main__":
     images_list = np.load(MENPO_2D_IMAGES_LIST_PATH, allow_pickle=True)
     landmarks_list = np.load(MENPO_2D_LANDMARKS_LIST_PATH, allow_pickle=True)
 
-    test_sample_path, test_target_path = get_menpo_paths("test", include_target=True)
+    test_sample_path, test_target_path = get_menpo_paths("train", include_target=True)
 
-    test_dataset = ImageDataset(test_sample_path, test_target_path, batch_size=1, shuffle=False, tag="test")
+    test_dataset = ImageDataset(test_sample_path, test_target_path, batch_size=1, shuffle=False, tag="train")
 
     run_id = SELECTED_MODEL.split("_")[1]
     model_dir_path = os.path.join(MODELS_PATH, SELECTED_MODEL)
@@ -38,7 +38,8 @@ if __name__ == "__main__":
     discriminator = load_module(model_dir_path, "discriminator")
 
     start_time = datetime.now()
-    auc, auc_plot, nppe_max, nppe_min, nppe_std, nppe_mean = compute_auc_metrics(generator, test_dataset, dict_menpo_2d)
+    auc, auc_plot, nppe_max, nppe_min, nppe_std, nppe_mean = compute_auc_metrics(generator, test_dataset, dict_menpo_2d,
+                                                                                 threshold=0.75)
     end_time = datetime.now()
 
     neptune_manager.save_image("evaluation/auc-plot", auc_plot)

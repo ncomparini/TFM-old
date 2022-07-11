@@ -1,25 +1,19 @@
 import tensorflow as tf
-from tensorflow.keras.losses import BinaryCrossentropy
 from tensorflow.keras.layers import Conv2D, Conv2DTranspose, BatchNormalization, Dropout, ReLU, LeakyReLU, Concatenate
 
+from src.models.gan.generator.Generator import Generator
 
-class Generator:
+
+class Image2ImageGenerator(Generator):
     def __init__(self, config, loss_identifier=None, pix2pix=True):
+        super().__init__(config, loss_identifier, pix2pix)
+
         self.input_dimensions = config["width"], config["height"], config["sample-image-channels"]
-        self.output_channels = config["target-image-channels"]
-        self.kernel_size = config["kernel-size"]
-        self.mean = config["mean"]
-        self.std_dev = config["std-dev"]
-        self.prob_dropout = config["dropout"]
-        self.lambda_ = config["lambda"]
-        self.pix2pix = pix2pix
+        self.output_dimensions = config["width"], config["height"], config["target-image-channels"]
 
-        loss_identifier = BinaryCrossentropy(from_logits=True) if loss_identifier is None else loss_identifier
-        self.loss = tf.keras.losses.get(loss_identifier)
+        self.model = self.create_architecture()
 
-        self.model = self.__create_architecture()
-
-    def __create_architecture(self):
+    def create_architecture(self):
         inputs = tf.keras.layers.Input(shape=self.input_dimensions)
 
         down_stack = [
@@ -45,7 +39,8 @@ class Generator:
         ]
 
         initializer = tf.random_normal_initializer(self.mean, self.std_dev)
-        last = Conv2DTranspose(self.output_channels,
+        output_channels = self.output_dimensions[-1]
+        last = Conv2DTranspose(output_channels,
                                self.kernel_size,
                                strides=2,
                                padding='same',

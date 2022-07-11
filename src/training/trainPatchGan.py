@@ -1,5 +1,5 @@
-from src.models.gan.Generator import Generator
-from src.models.gan.Discriminator import Discriminator
+from src.models.gan.generator.Image2ImageGenerator import Image2ImageGenerator
+from src.models.gan.discriminator.Discriminator import Discriminator
 from src.models.gan.GenerativeAdversarialNetwork import GenerativeAdversarialNetwork
 from src.models.log.LogTracker import LogTracker
 from src.data.ImageDataset import ImageDataset
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     train_dataset = ImageDataset(train_sample_path, train_target_path, batch_size, shuffle=True, tag="train")
     test_dataset = ImageDataset(test_sample_path, test_target_path, batch_size, shuffle=False, tag="test")
 
-    generator = Generator(config_gan)
+    generator = Image2ImageGenerator(config_gan)
     discriminator = Discriminator(config_gan, patch_gan=True)
     neptune_manager = LogTracker(secrets["neptune"])
 

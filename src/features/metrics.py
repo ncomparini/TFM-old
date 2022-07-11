@@ -14,26 +14,36 @@ def compute_distance_between_lists(actual_points, predicted_points):
 
     s1 = np.asarray(actual_points)
     s2 = np.asarray(predicted_points)
-    distances_normalized = np.min(cdist(s1, s2), axis=1) / distance_bb
-    mean_distance = np.mean(distances_normalized)
 
-    return mean_distance
+    if len(s2) > 0:
+        distances_normalized = np.min(cdist(s1, s2), axis=1) / distance_bb
+        mean_distance = np.mean(distances_normalized)
+
+        return mean_distance
+    else:
+        return -1
 
 
-def compute_nppe_values(model, dataset: ImageDataset, dictionary):
+def compute_nppe_values(model, dataset: ImageDataset, dictionary, threshold=0.75):
     nppe_values = []
+    empty_values = 0
 
     for idx, (sample_image, target_image) in enumerate(dataset.dataset):
         predicted_image = model.predict(sample_image)[0][..., -1]
         image_name = os.path.basename(dataset.sample_images_urls[idx])
 
         actual_points = dictionary.get(image_name)
-        predicted_points = extract_points(predicted_image, threshold=0.75)
+        predicted_points = extract_points(predicted_image, threshold)
 
         # nppe: Normalized Point-to-Point Error
         nppe = compute_distance_between_lists(actual_points, predicted_points)
+        if nppe != -1:
+            nppe_values.append(nppe)
+        else:
+            empty_values = empty_values + 1
 
-        nppe_values.append(nppe)
+    if empty_values != 0:
+        print(f"WARNING. Found {empty_values} empty lists when computing NPPE.")
 
     return nppe_values
 
@@ -61,8 +71,8 @@ def compute_auc_points(sorted_nppe_values, ratio=10):
     return np.asarray(auc_points)
 
 
-def compute_auc_metrics(model, dataset: ImageDataset, dictionary, area_limit=0.05, ratio=10):
-    nppes = compute_nppe_values(model, dataset, dictionary)
+def compute_auc_metrics(model, dataset: ImageDataset, dictionary, area_limit=0.05, ratio=10, threshold=0.75):
+    nppes = compute_nppe_values(model, dataset, dictionary, threshold)
     nppe_max, nppe_min, nppe_std, nppe_mean = np.max(nppes), np.min(nppes), np.std(nppes), np.mean(nppes)
     auc_points = compute_auc_points(np.sort(nppes), ratio=ratio)
     xs, ys = auc_points[:, 0], auc_points[:, 1]
