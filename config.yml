@@ -41,7 +41,7 @@ hyperparameters:
       mean: 0.0
       std-dev: 0.02
       dropout: 0.5
-      lr-generator: 0.00005
+      lr-generator:     0.000005
       lr-discriminator: 0.000001
       beta: 0.5
       lambda: 100

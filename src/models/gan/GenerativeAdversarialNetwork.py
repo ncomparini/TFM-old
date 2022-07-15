@@ -1,3 +1,6 @@
+import enum
+from abc import ABC, abstractmethod
+
 from src.data.Dataset import Dataset
 import tensorflow as tf
 import os
@@ -9,19 +12,26 @@ from datetime import datetime
 from definitions import MODELS_PATH
 
 
-class GenerativeAdversarialNetwork:
-    def __init__(self, generator: Generator, discriminator: Discriminator, config,
-                 generator_optimizer=None, discriminator_optimizer=None, log_tracker=None, allow_disc_switch_off=True):
+class GanType(enum.Enum):
+    IMAGE_GAN = "pix2pix"
+    POINT_GAN = "point-gan"
+
+
+class GenerativeAdversarialNetwork(ABC):
+    def __init__(self, generator: Generator, discriminator: Discriminator, config, gan_type: GanType, log_tracker,
+                 generator_optimizer=None, discriminator_optimizer=None, allow_disc_switch_off=True):
         self.generator = generator
         self.discriminator = discriminator
         self.params = config
+        self.gan_type = gan_type
+        self.log_tracker: LogTracker = log_tracker
+
         self.lr_generator = config["lr-generator"]
         self.lr_discriminator = config["lr-discriminator"]
         self.beta = config["beta"]
 
         self.generator_optimizer = self._get_optimizer(generator_optimizer, self.lr_generator, self.beta)
         self.discriminator_optimizer = self._get_optimizer(discriminator_optimizer, self.lr_discriminator, self.beta)
-        self.log_tracker: LogTracker = log_tracker
         self.allow_disc_switch_off = allow_disc_switch_off
 
     def fit(self, train_dataset: Dataset, epochs: int, test_dataset: Dataset, samples_to_save=3):
@@ -64,31 +74,9 @@ class GenerativeAdversarialNetwork:
 
         self.save_model()
 
-    @tf.function
+    @abstractmethod
     def _train_step(self, sample_image, target_image, generator_training, discriminator_training):
-        with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-            generator_output = self.generator.model(sample_image, training=generator_training)
-
-            disc_real_output = self.discriminator.model([sample_image, target_image], training=discriminator_training)
-            disc_generated_output = self.discriminator.model([sample_image, generator_output],
-                                                             training=discriminator_training)
-
-            gen_total_loss, gen_loss, gen_l1_loss = self.generator.compute_loss(disc_generated_output,
-                                                                                generator_output,
-                                                                                target_image)
-            disc_loss = self.discriminator.compute_loss(disc_real_output, disc_generated_output)
-
-        generator_gradients = gen_tape.gradient(gen_total_loss,
-                                                self.generator.model.trainable_variables)
-        discriminator_gradients = disc_tape.gradient(disc_loss,
-                                                     self.discriminator.model.trainable_variables)
-
-        self.generator_optimizer.apply_gradients(zip(generator_gradients,
-                                                     self.generator.model.trainable_variables))
-        self.discriminator_optimizer.apply_gradients(zip(discriminator_gradients,
-                                                         self.discriminator.model.trainable_variables))
-
-        return disc_loss, gen_total_loss, gen_loss, gen_l1_loss
+        pass
 
     def _get_optimizer(self, optimizer_identifier, learning_rate, beta):
         default_optimizer = Adam(learning_rate, beta)
@@ -101,12 +89,7 @@ class GenerativeAdversarialNetwork:
             self.log_tracker.save_static_variable(f"params/{key}", value)
 
     def _set_tags(self):
-        tags = ["GAN"]
-
-        if self.generator.pix2pix:
-            tags.append("pix2pix")
-        else:
-            tags.append("image-to-point")
+        tags = ["GAN", self.gan_type.value]
 
         if self.discriminator.patch_gan:
             tags.append("patch-gan")
@@ -134,11 +117,6 @@ class GenerativeAdversarialNetwork:
         self.log_tracker.save_static_variable("model-name", model_dir)
         print("Model saved")
 
+    @abstractmethod
     def save_image_examples(self, dataset: Dataset, num_examples, epoch, total_epochs):
-        for sample_test_image, target_test_image in dataset.dataset.take(num_examples):
-            if epoch == 0 or epoch == total_epochs:
-                self.log_tracker.log_image(f"{dataset.tag}/images/sample", sample_test_image[0] * 0.5 + 0.5)
-                self.log_tracker.log_image(f"{dataset.tag}/images/target", target_test_image[0][..., -1] * 0.5 + 0.5)
-
-            output_image = self.generator.model(sample_test_image)[0][..., -1] * 0.5 + 0.5
-            self.log_tracker.log_image(f"{dataset.tag}/images/predicted/epoch-{epoch:03d}", output_image)
+        pass

@@ -1,6 +1,6 @@
+from src.models.gan.ImageGan import ImageGan
 from src.models.gan.generator.Image2ImageGenerator import Image2ImageGenerator
 from src.models.gan.discriminator.Discriminator import Discriminator
-from src.models.gan.GenerativeAdversarialNetwork import GenerativeAdversarialNetwork
 from src.models.log.LogTracker import LogTracker
 from src.data.ImageDataset import ImageDataset
 from definitions import CONFIG_PATH, SECRETS_PATH, get_menpo_paths
@@ -28,8 +28,8 @@ if __name__ == "__main__":
     discriminator = Discriminator(config_gan, patch_gan=True)
     neptune_manager = LogTracker(secrets["neptune"])
 
-    gan = GenerativeAdversarialNetwork(generator, discriminator, config_gan,
-                                       log_tracker=neptune_manager,
-                                       allow_disc_switch_off=False)
+    gan = ImageGan(generator, discriminator, config_gan,
+                   log_tracker=neptune_manager,
+                   allow_disc_switch_off=False)
 
     gan.fit(train_dataset, config_gan["epochs"], test_dataset)

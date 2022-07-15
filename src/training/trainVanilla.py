@@ -1,5 +1,5 @@
+from src.models.gan.ImageGan import ImageGan
 from src.models.gan.generator.Image2ImageGenerator import Image2ImageGenerator
-from src.models.gan.GenerativeAdversarialNetwork import GenerativeAdversarialNetwork
 from src.models.gan.discriminator.ImageDiscriminator import ImageDiscriminator
 from src.models.log.LogTracker import LogTracker
 from src.data.ImageDataset import ImageDataset
@@ -28,8 +28,8 @@ if __name__ == "__main__":
     discriminator = ImageDiscriminator(config_gan, patch_gan=False)
     neptune_manager = LogTracker(secrets["neptune"])
 
-    gan = GenerativeAdversarialNetwork(generator, discriminator, config_gan,
-                                       log_tracker=neptune_manager,
-                                       allow_disc_switch_off=False)
+    gan = ImageGan(generator, discriminator, config_gan,
+                   log_tracker=neptune_manager,
+                   allow_disc_switch_off=False)
 
     gan.fit(train_dataset, config_gan["epochs"], test_dataset)

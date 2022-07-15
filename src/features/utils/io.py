@@ -24,3 +24,7 @@ def load_image(img_file, img_type):
 
     img = tf.cast(img, tf.float32)
     return img
+
+
+def load_module(path, module):
+    return tf.keras.models.load_model(os.path.join(path, f"{module}_model.h5"), compile=False)

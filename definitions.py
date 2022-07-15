@@ -14,9 +14,9 @@ MENPO_2D_IMAGES_LIST_PATH = os.path.join(MENPO_2D_DIR, "imgslist.npy")
 MENPO_2D_LANDMARKS_LIST_PATH = os.path.join(MENPO_2D_DIR, "landmarkslist.npy")
 
 
-def get_menpo_paths(partition: str, include_target: bool = True):
+def get_menpo_paths(partition: str, include_image_target: bool = True):
     partition_dir = os.path.join(MENPO_2D_DIR, partition)
-    if include_target:
+    if include_image_target:
         return os.path.join(partition_dir, "input"), os.path.join(partition_dir, "output")
     else:
         return os.path.join(partition_dir, "input")

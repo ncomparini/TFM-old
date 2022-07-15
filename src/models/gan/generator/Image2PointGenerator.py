@@ -23,10 +23,7 @@ class Image2PointGenerator(Generator):
             self._downsample(128, self.kernel_size, self.mean, self.std_dev),  # (bs, 64, 64, 128)
             self._downsample(256, self.kernel_size, self.mean, self.std_dev),  # (bs, 32, 32, 256)
             self._downsample(512, self.kernel_size, self.mean, self.std_dev),  # (bs, 16, 16, 512)
-            self._downsample(512, self.kernel_size, self.mean, self.std_dev),  # (bs, 8, 8, 512)
-            self._downsample(512, self.kernel_size, self.mean, self.std_dev),  # (bs, 4, 4, 512)
-            self._downsample(512, self.kernel_size, self.mean, self.std_dev),  # (bs, 2, 2, 512)
-            # self.downsample(512, self.kernel_size),                         # (bs, 1, 1, 512)
+            self._downsample(1024, self.kernel_size, self.mean, self.std_dev),  # (bs, 8, 8, 1024)
         ]
 
         initializer = tf.random_normal_initializer(self.mean, self.std_dev)

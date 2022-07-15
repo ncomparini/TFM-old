@@ -7,6 +7,7 @@ class Dataset:
     def __init__(self, batch_size, tag):
         self.batch_size = batch_size
         self.tag = tag
+        self.sample_images_urls = None
         self.dataset = None
 
     def create_dataset(self, tensors_list, load_function, buffer_size, shuffle):

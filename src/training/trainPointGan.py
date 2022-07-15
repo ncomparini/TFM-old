@@ -3,7 +3,6 @@ import numpy as np
 from src.data.PointDataset import PointDataset
 from src.models.gan.PointGan import PointGan
 from src.models.gan.discriminator.PointDiscriminator import PointDiscriminator
-from src.models.gan.GenerativeAdversarialNetwork import GenerativeAdversarialNetwork
 from src.models.gan.generator.Image2PointGenerator import Image2PointGenerator
 from src.models.log.LogTracker import LogTracker
 from definitions import CONFIG_PATH, SECRETS_PATH, get_menpo_paths, MENPO_2D_DICT_PATH
@@ -20,8 +19,8 @@ if __name__ == "__main__":
 
     points_dictionary = np.load(MENPO_2D_DICT_PATH, allow_pickle=True).item()
 
-    train_sample_path = get_menpo_paths("train", False)
-    test_sample_path = get_menpo_paths("test", False)
+    train_sample_path = get_menpo_paths("train", include_image_target=False)
+    test_sample_path = get_menpo_paths("test", include_image_target=False)
 
     config_gan = config["hyperparameters"]["gan"][MODEL_TYPE]
     batch_size = config_gan["batch-size"]
@@ -33,7 +32,7 @@ if __name__ == "__main__":
                                 shuffle=False, tag="test", number_of_landmarks=number_of_landmarks)
 
     generator = Image2PointGenerator(config_gan)
-    discriminator = PointDiscriminator(config_gan, patch_gan=True)
+    discriminator = PointDiscriminator(config_gan, patch_gan=False)
     neptune_manager = LogTracker(secrets["neptune"])
 
     gan = PointGan(generator, discriminator, config_gan,
