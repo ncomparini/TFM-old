@@ -1,3 +1,4 @@
+from datetime import datetime
 from operator import itemgetter
 from scipy.spatial.distance import cdist
 
@@ -6,6 +7,8 @@ from src.features.utils.image import extract_points
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+
+from src.models.log.LogTracker import LogTracker
 
 
 def compute_distance_between_lists(actual_points, predicted_points):
@@ -81,20 +84,6 @@ def compute_auc_points(sorted_nppe_values, ratio=10):
     return np.asarray(auc_points)
 
 
-def compute_auc_metrics(model, dataset: Dataset, dictionary, is_image_output, number_of_landmarks=68,
-                        area_limit=0.05, ratio=10, threshold=0.75):
-    nppes = compute_nppe_values(model, dataset, dictionary, threshold, is_image_output, number_of_landmarks)
-    nppe_max, nppe_min, nppe_std, nppe_mean = np.max(nppes), np.min(nppes), np.std(nppes), np.mean(nppes)
-    auc_points = compute_auc_points(np.sort(nppes), ratio=ratio)
-    xs, ys = auc_points[:, 0], auc_points[:, 1]
-    auc_plot = get_auc_plot(xs, ys, step=ratio, area_limit=area_limit)
-
-    idx_last_valid_point = np.where(xs > area_limit)[-1][0]
-    auc = np.trapz(ys[:idx_last_valid_point], xs[:idx_last_valid_point]) / area_limit
-
-    return auc, auc_plot, nppe_max, nppe_min, nppe_std, nppe_mean
-
-
 def get_auc_plot(xs, ys, step=10, area_limit=0.05):
     figure, ax = plt.subplots(1, 1, figsize=(12, 10))
 
@@ -109,3 +98,55 @@ def get_auc_plot(xs, ys, step=10, area_limit=0.05):
     ax.set_yticks(np.arange(0.0, 1.1, 0.1))
 
     return figure
+
+
+def compute_auc_metrics(model, dataset: Dataset, gt_dictionary, is_image_output, threshold=0.75, number_of_landmarks=68,
+                        area_limit=0.05, ratio=10):
+    nppes = compute_nppe_values(model, dataset, gt_dictionary, threshold, is_image_output, number_of_landmarks)
+    nppe_max, nppe_min, nppe_std, nppe_mean = np.max(nppes), np.min(nppes), np.std(nppes), np.mean(nppes)
+    auc_points = compute_auc_points(np.sort(nppes), ratio=ratio)
+    xs, ys = auc_points[:, 0], auc_points[:, 1]
+    auc_plot = get_auc_plot(xs, ys, step=ratio, area_limit=area_limit)
+
+    idx_last_valid_point = np.where(xs > area_limit)[-1][0]
+    auc = np.trapz(ys[:idx_last_valid_point], xs[:idx_last_valid_point]) / area_limit
+
+    metrics_dict = {
+        "scalar-metrics": {
+            "auc": auc,
+            "nppe-max": nppe_max,
+            "nppe-min": nppe_min,
+            "nppe-std": nppe_std,
+            "nppe-mean": nppe_mean,
+        },
+        "plot-metrics": {
+            "auc-plot": auc_plot
+        }
+    }
+
+    return metrics_dict
+
+
+def save_eval_metrics(log_tracker: LogTracker, metrics_dict: dict, set_name: str):
+    scalar_metrics = metrics_dict.get("scalar-metrics", {})
+    plot_metrics = metrics_dict.get("plot-metrics", {})
+
+    for metric_name, metric_value in scalar_metrics.items():
+        path = f"evaluation/{set_name}/{metric_name}"
+        log_tracker.save_static_variable(path, metric_value)
+
+    for metric_name, metric_value in plot_metrics.items():
+        path = f"evaluation/{set_name}/{metric_name}"
+        log_tracker.save_image(path, metric_value)
+
+
+def compute_and_save_metrics(model, dataset: Dataset, gt_dictionary, log_tracker: LogTracker, is_image_output: bool,
+                             threshold: float = 0.75):
+    start_time = datetime.now()
+    metrics_dict = compute_auc_metrics(model, dataset, gt_dictionary, is_image_output, threshold)
+    end_time = datetime.now()
+
+    save_eval_metrics(log_tracker, metrics_dict, dataset.tag)
+
+    auc = metrics_dict.get("scalar-metrics", {}).get("auc", None)
+    print(f"Evaluation {dataset.tag} set finished. Elapsed time: {end_time - start_time}. AUC: {auc}")
