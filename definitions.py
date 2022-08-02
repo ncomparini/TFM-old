@@ -8,7 +8,7 @@ MODELS_PATH = os.path.join(ROOT_DIR, "models")
 
 DATA_DIR = os.path.join(ROOT_DIR, "data")
 PROCESSED_DATA_DIR = os.path.join(DATA_DIR, "processed")
-MENPO_2D_DIR = os.path.join(PROCESSED_DATA_DIR, "menpo-2d-frontals")
+MENPO_2D_DIR = os.path.join(PROCESSED_DATA_DIR, "menpo2d-sketch-v1-semifrontal")
 MENPO_2D_DICT_PATH = os.path.join(MENPO_2D_DIR, "dictMenpo2D.npy")
 MENPO_2D_IMAGES_LIST_PATH = os.path.join(MENPO_2D_DIR, "imgslist.npy")
 MENPO_2D_LANDMARKS_LIST_PATH = os.path.join(MENPO_2D_DIR, "landmarkslist.npy")

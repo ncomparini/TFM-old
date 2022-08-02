@@ -8,7 +8,7 @@ from src.models.log.LogTracker import LogTracker
 
 from definitions import MODELS_PATH, MENPO_2D_DICT_PATH, get_menpo_paths, SECRETS_PATH
 
-SELECTED_MODEL = "model_TFM-65_2022-07-15_19.10.50"
+SELECTED_MODEL = "model_TFM-79_2022-08-01_23.39.44"
 
 if __name__ == "__main__":
     with open(SECRETS_PATH, 'r') as file:

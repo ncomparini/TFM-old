@@ -1,7 +1,6 @@
 import tensorflow as tf
 import glob
 import os
-
 from definitions import ROOT_DIR
 
 
@@ -28,3 +27,7 @@ def load_image(img_file, img_type):
 
 def load_module(path, module):
     return tf.keras.models.load_model(os.path.join(path, f"{module}_model.h5"), compile=False)
+
+
+def save_model_diagram(path, model):
+    return tf.keras.utils.plot_model(model, to_file=path, show_shapes=True)

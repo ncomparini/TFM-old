@@ -3,8 +3,6 @@
 
 models/model_*
 
-menpo-2d-frontals
-
 secrets.yml
 
 src/.neptune
@@ -18,3 +16,5 @@ src/data/__pycache__/
 src/models/gan/__pycache__/
 src/models/log/__pycache__/
 *.py[cod]
+
+/data/*

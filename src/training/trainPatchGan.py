@@ -15,8 +15,8 @@ if __name__ == "__main__":
     with open(SECRETS_PATH, 'r') as file:
         secrets = yaml.safe_load(file)
 
-    train_sample_path, train_target_path = get_menpo_paths("test", True)
-    test_sample_path, test_target_path = get_menpo_paths("train", True)
+    train_sample_path, train_target_path = get_menpo_paths("train", True)
+    test_sample_path, test_target_path = get_menpo_paths("test", True)
 
     config_gan = config["hyperparameters"]["gan"][MODEL_TYPE]
     batch_size = config_gan["batch-size"]
