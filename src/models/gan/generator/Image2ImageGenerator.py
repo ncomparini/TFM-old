@@ -19,22 +19,21 @@ class Image2ImageGenerator(Generator):
         down_stack = [
             self._downsample(64, self.kernel_size, self.mean, self.std_dev, apply_batchnorm=False),
             # (bs, 128, 128, 64)
-            self._downsample(128, self.kernel_size, self.mean, self.std_dev),  # (bs, 64, 64, 128)
-            self._downsample(256, self.kernel_size, self.mean, self.std_dev),  # (bs, 32, 32, 256)
-            self._downsample(512, self.kernel_size, self.mean, self.std_dev),  # (bs, 16, 16, 512)
-            self._downsample(512, self.kernel_size, self.mean, self.std_dev),  # (bs, 8, 8, 512)
-            self._downsample(1024, self.kernel_size, self.mean, self.std_dev),  # (bs, 4, 4, 512)
-            # self._downsample(1024, self.kernel_size, self.mean, self.std_dev),  # (bs, 2, 2, 512)
-            # self.downsample(512, self.kernel_size),                         # (bs, 1, 1, 512)
+            self._downsample(64, self.kernel_size, self.mean, self.std_dev),  # (bs, 64, 64, 128)
+            self._downsample(128, self.kernel_size, self.mean, self.std_dev),  # (bs, 32, 32, 256)
+            self._downsample(128, self.kernel_size, self.mean, self.std_dev),  # (bs, 16, 16, 512)
+            self._downsample(256, self.kernel_size, self.mean, self.std_dev),  # (bs, 8, 8, 512)
+            self._downsample(512, self.kernel_size, self.mean, self.std_dev),  # (bs, 4, 4, 512)
+            self._downsample(1024, self.kernel_size, self.mean, self.std_dev)  # (bs, 2, 2, 512)
         ]
 
         up_stack = [
-            # self._upsample(1024, self.kernel_size, self.mean, self.std_dev, self.prob_dropout),  # (bs, 2, 2, 1024)
-            self._upsample(1024, self.kernel_size, self.mean, self.std_dev, self.prob_dropout),  # (bs, 4, 4, 1024)
-            self._upsample(512, self.kernel_size, self.mean, self.std_dev, self.prob_dropout),  # (bs, 8, 8, 1024)
-            self._upsample(512, self.kernel_size, self.mean, self.std_dev),  # (bs, 16, 16, 1024)
-            self._upsample(256, self.kernel_size, self.mean, self.std_dev),  # (bs, 32, 32, 512)
-            self._upsample(128, self.kernel_size, self.mean, self.std_dev),  # (bs, 64, 64, 256)
+            self._upsample(1024, self.kernel_size, self.mean, self.std_dev, self.prob_dropout),  # (bs, 2, 2, 1024)
+            self._upsample(512, self.kernel_size, self.mean, self.std_dev, self.prob_dropout),  # (bs, 4, 4, 1024)
+            self._upsample(256, self.kernel_size, self.mean, self.std_dev, self.prob_dropout),  # (bs, 8, 8, 1024)
+            self._upsample(128, self.kernel_size, self.mean, self.std_dev),  # (bs, 16, 16, 1024)
+            self._upsample(128, self.kernel_size, self.mean, self.std_dev),  # (bs, 32, 32, 512)
+            self._upsample(64, self.kernel_size, self.mean, self.std_dev),  # (bs, 64, 64, 256)
             self._upsample(64, self.kernel_size, self.mean, self.std_dev),  # (bs, 128, 128, 128)
         ]
 
