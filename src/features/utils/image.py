@@ -15,12 +15,16 @@ def get_2_dimensional_matrix(matrix: np.ndarray):
 
 
 def normalize(img: np.ndarray):
+    return (img / 127.5) - 1
+
+
+def denormalize(img: np.ndarray):
     return img * 0.5 + 0.5
 
 
-def extract_points(img: np.ndarray, threshold: float = 0.85):
+def extract_points(img: np.ndarray, threshold):
     gray_image = get_2_dimensional_matrix(img)
-    img_norm = normalize(gray_image)
+    img_norm = denormalize(gray_image)
     points = np.argwhere(img_norm > threshold)
 
     return points
