@@ -1,49 +1,59 @@
-hyperparameters:
-  gan:
+gan:
+  image-to-image:
+    data:
+      data-dir: "menpo2d-sketch-v1-semifrontal"
+
     vanilla:
-      width: 128
-      height: 128
-      sample-image-channels: 3
-      target-image-channels: 1
-      kernel-size: 4
-      mean: 0.0
-      std-dev: 0.02
-      dropout: 0.5
-      lr-generator: 0.00005
-      lr-discriminator: 0.000001
-      beta: 0.5
-      lambda: 100
-      epochs: 100
-      batch-size: 4
+      hyperparameters:
+        width: 128
+        height: 128
+        sample-image-channels: 3
+        target-image-channels: 1
+        kernel-size: 4
+        mean: 0.0
+        std-dev: 0.02
+        dropout: 0.5
+        lr-generator: 0.00005
+        lr-discriminator: 0.000001
+        beta: 0.5
+        lambda: 100
+        epochs: 100
+        batch-size: 4
 
     patch-gan:
-      width: 128
-      height: 128
-      sample-image-channels: 3
-      target-image-channels: 1
-      kernel-size: 4
-      mean: 0.0
-      std-dev: 0.02
-      dropout: 0.5
-      lr-generator: 0.00005
-      lr-discriminator: 0.000001
-      beta: 0.5
-      lambda: 100
-      epochs: 100
-      batch-size: 4
+      hyperparameters:
+        width: 128
+        height: 128
+        sample-image-channels: 3
+        target-image-channels: 1
+        kernel-size: 4
+        mean: 0.0
+        std-dev: 0.02
+        dropout: 0.5
+        lr-generator: 0.00005
+        lr-discriminator: 0.000001
+        beta: 0.5
+        lambda: 100
+        epochs: 100
+        batch-size: 4
+
+  image-to-point:
+    data:
+      data-dir: "menpo2d-points-v2-semifrontal"
 
     point-gan:
-      width: 128
-      height: 128
-      sample-image-channels: 3
-      number-of-landmarks: 68
-      kernel-size: 4
-      mean: 0.0
-      std-dev: 0.02
-      dropout: 0.5
-      lr-generator: 0.000005
-      lr-discriminator: 0.000001
-      beta: 0.5
-      lambda: 100
-      epochs: 100
-      batch-size: 4
+      hyperparameters:
+        width: 128
+        height: 128
+        sample-image-channels: 3
+        number-of-landmarks: 68
+        kernel-size: 4
+        mean: 0.0
+        std-dev: 0.02
+        dropout: 0.5
+        lr-generator: 0.000001
+        lr-discriminator: 0.0000001
+        beta: 0.5
+        lambda: 100
+        epochs: 100
+        batch-size: 4

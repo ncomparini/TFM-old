@@ -6,18 +6,24 @@ from src.features.metrics import compute_and_save_metrics
 from src.features.utils.io import load_module
 from src.models.log.LogTracker import LogTracker
 
-from definitions import MODELS_PATH, MENPO_2D_DICT_PATH, get_menpo_paths, SECRETS_PATH
+from definitions import MODELS_PATH, get_menpo_paths, SECRETS_PATH, CONFIG_PATH, get_dict_path
 
-SELECTED_MODEL = "model_TFM-79_2022-08-01_23.39.44"
+SELECTED_MODEL = "model_TFM-86_2022-09-08_01.17.29"
 
 if __name__ == "__main__":
+    with open(CONFIG_PATH, 'r') as file:
+        config = yaml.safe_load(file)
+
     with open(SECRETS_PATH, 'r') as file:
         secrets = yaml.safe_load(file)
 
-    dict_menpo_2d = np.load(MENPO_2D_DICT_PATH, allow_pickle=True).item()
+    type_config = config["gan"]["image-to-image"]
+    data_config = type_config["data"]
 
-    train_sample_path, train_target_path = get_menpo_paths("train", include_image_target=True)
-    test_sample_path, test_target_path = get_menpo_paths("test", include_image_target=True)
+    dict_menpo_2d = np.load(get_dict_path(data_config), allow_pickle=True).item()
+
+    train_sample_path, train_target_path = get_menpo_paths(data_config, "train", include_image_target=True)
+    test_sample_path, test_target_path = get_menpo_paths(data_config, "test", include_image_target=True)
 
     train_dataset = ImageDataset(train_sample_path, train_target_path, batch_size=1, shuffle=False, tag="train")
     test_dataset = ImageDataset(test_sample_path, test_target_path, batch_size=1, shuffle=False, tag="test")

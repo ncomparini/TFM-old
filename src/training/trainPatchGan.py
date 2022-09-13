@@ -15,21 +15,25 @@ if __name__ == "__main__":
     with open(SECRETS_PATH, 'r') as file:
         secrets = yaml.safe_load(file)
 
-    train_sample_path, train_target_path = get_menpo_paths("train", True)
-    test_sample_path, test_target_path = get_menpo_paths("test", True)
+    type_config = config["gan"]["image-to-image"]
+    gan_config = type_config[MODEL_TYPE]
+    data_config = type_config["data"]
 
-    config_gan = config["hyperparameters"]["gan"][MODEL_TYPE]
-    batch_size = config_gan["batch-size"]
+    train_sample_path, train_target_path = get_menpo_paths(data_config, "train", True)
+    test_sample_path, test_target_path = get_menpo_paths(data_config, "test", True)
+
+    params_config = gan_config["hyperparameters"]
+    batch_size = params_config["batch-size"]
 
     train_dataset = ImageDataset(train_sample_path, train_target_path, batch_size, shuffle=True, tag="train")
     test_dataset = ImageDataset(test_sample_path, test_target_path, batch_size, shuffle=False, tag="test")
 
-    generator = Image2ImageGenerator(config_gan)
-    discriminator = ImageDiscriminator(config_gan, patch_gan=True)
+    generator = Image2ImageGenerator(params_config)
+    discriminator = ImageDiscriminator(params_config, patch_gan=True)
     neptune_manager = LogTracker(secrets["neptune"])
 
-    gan = ImageGan(generator, discriminator, config_gan,
+    gan = ImageGan(generator, discriminator, params_config,
                    log_tracker=neptune_manager,
                    allow_disc_switch_off=False)
 
-    gan.fit(train_dataset, config_gan["epochs"], test_dataset)
+    gan.fit(train_dataset, params_config["epochs"], test_dataset)
