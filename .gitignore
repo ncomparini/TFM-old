@@ -1,13 +1,24 @@
 # idea folder from PyCharm IDE
 .idea
 
-models/model_*
+# Deep Learning Model files
+models/model_*/*.h5
+models/model_*/*.json
 
+# Secret configuration with API keys
 secrets.yml
 
+# Data folders with whole datasets
+/data/interim/model_*/epochs
+/data/interim/model_*/sample
+/data/interim/model_*/target
+/data/processed/menpo*
+
+# Neptune artifacts folder
 src/.neptune
 src/evaluation/.neptune
 src/training/.neptune
+src/visualization/.neptune
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -16,5 +27,3 @@ src/data/__pycache__/
 src/models/gan/__pycache__/
 src/models/log/__pycache__/
 *.py[cod]
-
-/data/*

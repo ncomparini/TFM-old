@@ -1,3 +1,5 @@
+import os
+
 import neptune.new as neptune
 from neptune.new.types import File
 
@@ -42,3 +44,27 @@ class LogTracker:
 
     def get_run_id(self):
         return self.get_field_value("sys/id")
+
+    def download_original_epoch_images(self, partition, image_set, destination_dir):
+        print(f"Downloading {image_set} images...")
+        key = f"{partition}/images/{image_set}"
+        destination_path = os.path.join(destination_dir, image_set)
+
+        self.manager[key].download(destination_path)
+
+        print(f"Download finished successfully!")
+
+    def download_predicted_epoch_images(self, partition, destination_dir):
+        epochs = self.get_field_value("params/epochs")
+
+        print(f"Downloading predicted images from {epochs} epochs...")
+        for epoch in range(epochs):
+            key = f"{partition}/images/predicted/epoch-{epoch:03d}"
+            destination_path = os.path.join(destination_dir, f"epoch-{epoch:03d}")
+
+            self.manager[key].download(destination_path)
+
+            if epoch % 10 == 0:
+                print(f"Saved images from epoch {epoch:03d}")
+
+        print(f"Download finished successfully!")

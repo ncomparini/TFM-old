@@ -8,6 +8,7 @@ MODELS_PATH = os.path.join(ROOT_DIR, "models")
 
 DATA_DIR = os.path.join(ROOT_DIR, "data")
 PROCESSED_DATA_DIR = os.path.join(DATA_DIR, "processed")
+INTERIM_DATA_DIR = os.path.join(DATA_DIR, "interim")
 
 
 def get_data_dir(config):
